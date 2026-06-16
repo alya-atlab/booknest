@@ -23,6 +23,6 @@ router.get("/", getBooks);
 router.get("/my", protect, authorizeRoles("author", "admin"), getMyBooks);
 router.get("/:id", getBookByID);
 router.delete("/:id", protect, authorizeRoles("author", "admin"), deleteBook);
-router.put("/:id", protect, authorizeRoles("author", "admin"), updateBook);
+router.put("/:id", protect, authorizeRoles("author", "admin"),upload.single("image"), updateBook);
 
 export default router;

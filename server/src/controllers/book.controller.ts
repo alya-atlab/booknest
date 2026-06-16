@@ -125,18 +125,33 @@ export const updateBook = async (req: Request<Params>, res: Response) => {
   const body = req.body;
   const cleanData: Partial<BookUpdateInput> = {};
 
-  const allowedFields: (keyof BookUpdateInput)[] = [
-    "title",
-    "description",
-    "price",
-    "coverImage",
-    "stock",
-  ];
-  for (const key of allowedFields) {
-    if (body[key] !== undefined) {
-      cleanData[key] = body[key];
-    }
+ 
+  const coverImage = req.file;
+  if (coverImage) {
+    const imageUrl = await uploadImageToCloudinary(
+      coverImage.buffer,
+      "book-covers",
+    );
+    cleanData.coverImage = imageUrl;
   }
+const allowedTextFields: (keyof BookUpdateInput)[] = [
+  "title",
+  "description",
+];
+
+for (const key of allowedTextFields) {
+  if (body[key] !== undefined) {
+    cleanData[key] = body[key];
+  }
+}
+
+if (body.price !== undefined) {
+  cleanData.price = Number(body.price);
+}
+
+if (body.stock !== undefined) {
+  cleanData.stock = Number(body.stock);
+}
   if (Object.keys(cleanData).length === 0) {
     throw new ApiError("No valid fields to update", 400);
   }
