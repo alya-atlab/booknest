@@ -11,11 +11,27 @@ import {
 } from "../services/book.service";
 import { Types } from "mongoose";
 import { ApiError } from "../utils/ApiError";
+import { uploadImageToCloudinary } from "../services/cloudinary.service";
 
 export const createBook = async (req: Request, res: Response) => {
   const user = req.user;
   if (!user) throw new ApiError("Unauthorized", 401);
-  const data = req.body;
+  const coverImage = req.file;
+  if (!coverImage) {
+    throw new ApiError("Cover image is required", 400);
+  }
+  const imageUrl = await uploadImageToCloudinary(
+    coverImage.buffer,
+    "book-covers",
+  );
+
+  const data = {
+    ...req.body,
+    price: Number(req.body.price),
+    stock: Number(req.body.stock),
+    coverImage: imageUrl,
+  };
+
   const authorId = new Types.ObjectId(user._id);
   const createdBook = await createBookService(data, authorId);
   res.status(201).json({
@@ -114,7 +130,7 @@ export const updateBook = async (req: Request<Params>, res: Response) => {
     "description",
     "price",
     "coverImage",
-    "stock"
+    "stock",
   ];
   for (const key of allowedFields) {
     if (body[key] !== undefined) {

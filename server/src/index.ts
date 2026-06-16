@@ -9,7 +9,6 @@ import orderRoutes from "./routes/order.route";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import cors from "cors";
 dotenv.config();
-
 const app = express();
 
 app.use(express.json());
@@ -26,5 +25,6 @@ app.use("/user", userRoutes);
 app.use("/books", bookRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
+
 app.use(errorMiddleware);
 app.listen(PORT, () => console.log(`API running on ${PORT}`));

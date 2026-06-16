@@ -40,7 +40,7 @@ export const createBook = async (
   title = title.trim();
   description = description.trim();
   coverImage = coverImage.trim();
-  if (!title || !description || !coverImage) {
+  if (!title || !description ) {
     throw new ApiError("Fields cannot be empty", 400);
   }
   if (price <= 0) {

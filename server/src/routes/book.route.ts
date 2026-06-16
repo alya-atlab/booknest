@@ -9,9 +9,16 @@ import {
   getMyBooks,
   updateBook,
 } from "../controllers/book.controller";
+import upload from "../middlewares/upload.middleware";
 
 const router = Router();
-router.post("/", protect, authorizeRoles("author", "admin"), createBook);
+router.post(
+  "/",
+  protect,
+  authorizeRoles("author", "admin"),
+  upload.single("image"),
+  createBook,
+);
 router.get("/", getBooks);
 router.get("/my", protect, authorizeRoles("author", "admin"), getMyBooks);
 router.get("/:id", getBookByID);
